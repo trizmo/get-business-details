@@ -1,0 +1,66 @@
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+
+async function findEmailInWebsite(websiteUrl) {
+    let browser;
+    let email = 'N/A';
+
+    // Remove ? and everything after it
+    websiteUrl = websiteUrl.replace(/\?.*$/, '');
+
+    const urlsToCheck = [websiteUrl];
+    if (!websiteUrl.endsWith('/contact')) urlsToCheck.push(`${websiteUrl}/contact`);
+    if (!websiteUrl.endsWith('/contact-us')) urlsToCheck.push(`${websiteUrl}/contact-us`);
+
+    try {
+        browser = await puppeteer.launch({ headless: 'new' });
+
+        for (const url of urlsToCheck) {
+            const page = await browser.newPage();
+            await page.goto(url, { waitUntil: 'networkidle2' }).catch(e => console.log(e));
+
+            const foundEmail = await page.evaluate(() => {
+                const mailtoLinks = Array.from(document.querySelectorAll('a[href^="mailto:"]'));
+                if (mailtoLinks.length > 0) {
+                    return mailtoLinks[0].getAttribute('href').replace('mailto:', '');
+                }
+                return null;
+            });
+
+            await page.close();
+
+            if (foundEmail) {
+                email = foundEmail;
+                break;
+            }
+        }
+
+        return email;
+    } catch (error) {
+        console.log(`Failed to fetch or parse ${websiteUrl}: ${error}`);
+        return 'N/A';
+    } finally {
+        if (browser) {
+            await browser.close();
+        }
+    }
+}
+
+module.exports = async () => {
+    console.log("Finding emails");
+    const data = require('./placeDetails.json');
+
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].additionalPlaceDetails.website !== 'N/A') {
+            console.log(`Checking website ${data[i].additionalPlaceDetails.website} for email...`);
+            const email = await findEmailInWebsite(data[i].additionalPlaceDetails.website);
+
+            if (email !== 'N/A') {
+                data[i].additionalPlaceDetails.email = email;
+            }
+        }
+    }
+
+    fs.writeFileSync('./placeDetails.json', JSON.stringify(data, null, 2));
+    console.log('Updated email information saved to placeDetails.json');
+};

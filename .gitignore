@@ -1,0 +1,4 @@
+/node_modules
+/secrets
+package-lock.json
+placeDetails.json
