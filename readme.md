@@ -9,6 +9,8 @@ This project aims to scrape places and business details around a specific ZIP co
 - **Node.js (v14.x.x or higher)**
 - **Google API Key**
 - **Puppeteer**
+- **Cheerio (As an alertnative to Puppeteer)**
+
 
 ## Installation Steps
 
@@ -44,4 +46,3 @@ After these steps, you can run the application:
 ```bash
 npm start
 ```
-
