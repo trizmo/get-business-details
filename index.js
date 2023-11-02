@@ -24,8 +24,8 @@ console.log("Running Places API");
 console.log("==================");
 
 // Settings
-const zipCode = '90603';
-const types = ['liquor_store']
+const zipCode = 'california';
+const types = ['']
 
 async function getPlaceDetails(placeId, apiKey) {
     const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_address,formatted_phone_number,website,photos&key=${apiKey}`;
@@ -56,7 +56,7 @@ async function run() {
     // Variables
     const apiKey = process.env.GOOGLE_API_KEY;
     const baseUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
-    const query = `query=businesses+in+${zipCode}`;
+    const query = `query=nurseries+in+${zipCode}`;
 
     // URL
     const url = `${baseUrl}?${query}?&types=${types.join('|')}&key=${apiKey}`;
