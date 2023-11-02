@@ -42,6 +42,8 @@ const types = ['restaurant', 'cafe'];
 const zipCode = '90603';
 ```
 
+- Review types.json for a list of available types.
+
 After these steps, you can run the application:
 ```bash
 npm start
