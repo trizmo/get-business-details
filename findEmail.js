@@ -21,7 +21,7 @@ async function findEmailInWebsite(websiteUrl) {
 
 module.exports = async () => {
     console.log("Finding emails");
-    const data = require('./placeDetails.json');
+    const data = require('./data/placeDetails.json');
 
     for (let i = 0; i < data.length; i++) {
         if (data[i].website !== 'N/A') {
@@ -34,6 +34,6 @@ module.exports = async () => {
     }
 
     // Save updated data back to JSON file
-    fs.writeFileSync('./placeDetails.json', JSON.stringify(data, null, 2));
+    fs.writeFileSync('./data/placeDetails.json', JSON.stringify(data, null, 2));
     console.log('Updated email information saved to placeDetails.json');
 };

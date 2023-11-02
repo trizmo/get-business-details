@@ -50,5 +50,5 @@ npm start
 ```
 
 This will output two files under 'data/' directory:
-- `placesDetail.json`
+- `placeDetails_[zip_code]_[date].json`
 - `leads_[zip_code]_[date].csv` 

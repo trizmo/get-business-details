@@ -42,9 +42,15 @@ async function getPlaceDetails(placeId, apiKey) {
 }
 
 async function run() {
+
+    // check if data folder exists
+    if (!fs.existsSync('data')) {
+        fs.mkdirSync('data');
+    }
+
     // delete placeDetails.json if it exists
-    if (fs.existsSync('placeDetails.json')) {
-        fs.unlinkSync('placeDetails.json');
+    if (fs.existsSync('data/placeDetails.json')) {
+        fs.unlinkSync('data/placeDetails.json');
     }
 
     // Variables
@@ -94,7 +100,7 @@ async function run() {
             }
 
             // Write JSON array to file
-            fs.writeFileSync('placeDetails.json', JSON.stringify(placeDetailsArray, null, 2));
+            fs.writeFileSync('./data/placeDetails.json', JSON.stringify(placeDetailsArray, null, 2));
             console.log('Saved data to placeDetails.json');
 
             console.log("Running find emails")

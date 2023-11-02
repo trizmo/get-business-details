@@ -20,8 +20,8 @@ module.exports = (data, zipcode) => {
         csv += row.join(",") + "\n";
     }
 
-    const date = new Date().toISOString().split('T')[0];  // Getting the current date in YYYY-MM-DD format
-    const filePath = `./leads_${zipcode}_${date}.csv`;
+    const date = new Date().toISOString();  // Getting the current date in iso format
+    const filePath = `./data/leads_${zipcode}_${date}.csv`;
 
     fs.writeFileSync(filePath, csv);
     console.log(`Data saved to ${filePath}`);
