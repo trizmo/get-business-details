@@ -1,8 +1,15 @@
 // Import required modules
 const fetch = require('node-fetch');
 const fs = require('fs');
+
+// Cheerio Version of findEmail
 const findEmail = require('./findEmail');
+
+// Puppeteer Version of findEmail
 const findEmailPupp = require('./findEmailPuppeteer');
+
+// Convert to CSV and save to file
+const convertToCsv = require('./convertToCsv');
 
 // Load environment variables
 require('dotenv').config({
@@ -16,6 +23,10 @@ console.log("==================");
 console.log("Running Places API");
 console.log("==================");
 
+// Settings
+const zipCode = '90603';
+const types = ['liquor_store']
+
 async function getPlaceDetails(placeId, apiKey) {
     const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_address,formatted_phone_number,website,photos&key=${apiKey}`;
 
@@ -23,8 +34,8 @@ async function getPlaceDetails(placeId, apiKey) {
     const data = await response.json();
 
     return {
-        name: data.result.name,
-        address: data.result.formatted_address,
+        // name: data.result.name,
+        // address: data.result.formatted_address,
         phoneNumber: data.result.formatted_phone_number || 'N/A',
         website: data.result.website || 'N/A',
     };
@@ -38,10 +49,8 @@ async function run() {
 
     // Variables
     const apiKey = process.env.GOOGLE_API_KEY;
-    const zipCode = '90603';
     const baseUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
     const query = `query=businesses+in+${zipCode}`;
-    const types = ['travel_agency']
 
     // URL
     const url = `${baseUrl}?${query}?&types=${types.join('|')}&key=${apiKey}`;
@@ -59,6 +68,11 @@ async function run() {
                 const placeId = place.place_id;
                 const name = place.name;
                 const address = place.formatted_address;
+                const business_status = place.business_status;
+                const coordinates = place.geometry.location;
+                const types = place.types;
+                const rating = place.rating;
+
 
                 // Fetch additional details
                 const additionalPlaceDetails = await getPlaceDetails(placeId, apiKey);
@@ -68,8 +82,11 @@ async function run() {
                 const placeDetails = {
                     name,
                     address,
-                    place,
-                    additionalPlaceDetails,
+                    business_status,
+                    coordinates,
+                    types,
+                    rating,
+                    ...additionalPlaceDetails,
                 };
 
                 // Push to array
@@ -81,7 +98,10 @@ async function run() {
             console.log('Saved data to placeDetails.json');
 
             console.log("Running find emails")
-            findEmailPupp()
+            let dataWithEmail = await findEmailPupp()
+
+            console.log("Running convert to csv")
+            convertToCsv(dataWithEmail, zipCode);
 
         } else {
             // Log error message

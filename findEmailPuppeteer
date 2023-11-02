@@ -46,21 +46,23 @@ async function findEmailInWebsite(websiteUrl) {
     }
 }
 
-module.exports = async () => {
+module.exports = async () => new Promise(async (resolve, reject) => {
     console.log("Finding emails");
     const data = require('./placeDetails.json');
 
     for (let i = 0; i < data.length; i++) {
-        if (data[i].additionalPlaceDetails.website !== 'N/A') {
-            console.log(`Checking website ${data[i].additionalPlaceDetails.website} for email...`);
-            const email = await findEmailInWebsite(data[i].additionalPlaceDetails.website);
+        if (data[i].website !== 'N/A') {
+            console.log(`Checking website ${data[i].website} for email...`);
+            const email = await findEmailInWebsite(data[i].website);
 
             if (email !== 'N/A') {
-                data[i].additionalPlaceDetails.email = email;
+                data[i].email = email;
             }
         }
     }
 
     fs.writeFileSync('./placeDetails.json', JSON.stringify(data, null, 2));
     console.log('Updated email information saved to placeDetails.json');
-};
+
+    resolve(data);
+});
