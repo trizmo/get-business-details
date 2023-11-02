@@ -46,3 +46,7 @@ After these steps, you can run the application:
 ```bash
 npm start
 ```
+
+This will output two files under 'data/' directory:
+- `placesDetail.json`
+- `leads_[zip_code]_[date].csv` 
